@@ -1,8 +1,9 @@
 pipeline {
     agent any
     environment {
-        IMAGE_NAME = 'mydevopsway/my_nginx_app' // Змінено на повне ім'я образу з урахуванням реєстру
+        IMAGE_NAME = 'mydevopsway/my_nginx_app' // Повне ім'я Docker образу
         IMAGE_TAG = 'latest'
+        EC2_HOST = 'ec2-user@ec2-3-9-144-180' // Замініть на вашу реальну публічну IP адресу EC2 інстансу
     }
     stages {
         stage('Checkout') {
@@ -13,7 +14,6 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Використовуйте змінні середовища для забезпечення консистентності
                     docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
                 }
             }
@@ -21,13 +21,23 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Here we can integrate testing commands if necessary'
-                // Додаємо сценарії тестування, якщо вони будуть доступні
             }
         }
         stage('Push to Registry') {
             steps {
-                withDockerRegistry(credentialsId: 'docer_ssh', url: 'https://index.docker.io/v1/') { // Переконайтеся, що credentialsId вказано правильно
+                withDockerRegistry(credentialsId: 'docker_ssh', url: 'https://index.docker.io/v1/') {
                     sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+                }
+            }
+        }
+        stage('Deploy to EC2') {
+            steps {
+                sshagent(['your-ssh-credential-id']) { // Замініть 'your-ssh-credential-id' на ID креденшіалів, які ви створили
+                    script {
+                        // Команди для розгортання на EC2
+                        sh "scp -o StrictHostKeyChecking=no ./deploy/docker-compose.yml ${EC2_HOST}:/home/ec2-user/"
+                        sh "ssh -o StrictHostKeyChecking=no ${EC2_HOST} 'docker-compose -f /home/ec2-user/docker-compose.yml pull && docker-compose -f /home/ec2-user/docker-compose.yml up -d'"
+                    }
                 }
             }
         }
