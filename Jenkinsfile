@@ -27,7 +27,7 @@ pipeline {
             steps{
                 withDockerRegistry(credentialsId: 'docer_ssh', url: 'https://index.docker.io/v1/') {
                     sh '''
-                        docker push mydevopsway/my_nginx_app:0.1
+                        docker push mydevopsway/my_nginx_app:latest
                     '''
                 }
             }
