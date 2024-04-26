@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE = 'my-nginx-app'
-        DOCKER_TAG = 'latest'
+        IMAGE_NAME = 'mydevopsway/my_nginx_app' // Змінено на повне ім'я образу з урахуванням реєстру
+        IMAGE_TAG = 'latest'
     }
     stages {
         stage('Checkout') {
@@ -13,7 +13,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("$DOCKER_IMAGE:$DOCKER_TAG")
+                    // Використовуйте змінні середовища для забезпечення консистентності
+                    docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
                 }
             }
         }
@@ -24,17 +25,15 @@ pipeline {
             }
         }
         stage('Push to Registry') {
-            steps{
-                withDockerRegistry(credentialsId: 'docer_ssh', url: 'https://index.docker.io/v1/') {
-                    sh '''
-                        docker push mydevopsway/my_nginx_app:latest
-                    '''
+            steps {
+                withDockerRegistry(credentialsId: 'docker_ssh', url: 'https://index.docker.io/v1/') { // Переконайтеся, що credentialsId вказано правильно
+                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
         }
         stage('Cleanup') {
             steps {
-                sh "docker rmi $DOCKER_IMAGE:$DOCKER_TAG"
+                sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
     }
