@@ -35,8 +35,8 @@ pipeline {
                 sshagent(['AWS_CD']) { // Замініть 'your-ssh-credential-id' на ID креденшіалів, які ви створили
                     script {
                         // Команди для розгортання на EC2
-                        sh "scp -o StrictHostKeyChecking=no ./deploy/docker-compose.yml ${EC2_HOST}:/home/ec2-user/"
-                        sh "ssh -o StrictHostKeyChecking=no ${EC2_HOST} 'docker-compose -f /home/ec2-user/docker-compose.yml pull && docker-compose -f /home/ec2-user/docker-compose.yml up -d'"
+                        sh "scp -o StrictHostKeyChecking=no docker pull ${IMAGE_NAME}:${IMAGE_TAG} "
+                        sh "ssh -o StrictHostKeyChecking=no docker run -d -p 80:80 --name ${IMAGE_NAME}:${IMAGE_TAG}"
                     }
                 }
             }
