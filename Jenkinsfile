@@ -35,7 +35,7 @@ pipeline {
                 sshagent(['AWS_CD']) { // Замініть 'your-ssh-credential-id' на ID креденшіалів, які ви створили
                     script {
                         // Команди для розгортання на EC2
-                        sh "scp -o StrictHostKeyChecking=no docker pull ${IMAGE_NAME}:${IMAGE_TAG} "
+                        sh "ssh -o StrictHostKeyChecking=no docker pull ${IMAGE_NAME}:${IMAGE_TAG} "
                         sh "ssh -o StrictHostKeyChecking=no docker run -d -p 80:80 --name ${IMAGE_NAME}:${IMAGE_TAG}"
                     }
                 }
