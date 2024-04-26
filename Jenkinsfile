@@ -24,11 +24,11 @@ pipeline {
             }
         }
         stage('Push to Registry') {
-            steps {
-                script {
-                    docker.withRegistry('https://your-registry-url.com', 'registry-credentials') {
-                        docker.image("$DOCKER_IMAGE:$DOCKER_TAG").push()
-                    }
+            steps{
+                withDockerRegistry(credentialsId: 'docer_ssh', url: 'https://index.docker.io/v1/') {
+                    sh '''
+                        docker push mydevopsway/my_nginx_app_for_task2:0.1
+                    '''
                 }
             }
         }
