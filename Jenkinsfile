@@ -25,7 +25,7 @@ pipeline {
         }
         stage('Push to Registry') {
             steps {
-                withDockerRegistry(credentialsId: 'docker_ssh', url: 'https://index.docker.io/v1/') {
+                withDockerRegistry(credentialsId: 'docer_ssh', url: 'https://index.docker.io/v1/') {
                     sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
