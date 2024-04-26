@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        IMAGE_NAME = 'mydevopsway/my_nginx_app'
+        IMAGE_NAME = 'mydevopsway/my_nginx_app' // Повне ім'я Docker образу
         IMAGE_TAG = 'latest'
-        EC2_HOST = 'ec2-user@3.9.144.180' // Реальна IP адреса вашого EC2 інстансу
+        EC2_HOST = 'ec2-user@3.9.144.180' // Замініть на вашу реальну публічну IP адресу EC2 інстансу
     }
     stages {
         stage('Checkout') {
@@ -32,9 +32,11 @@ pipeline {
         }
         stage('Deploy to EC2') {
             steps {
-                sshagent(['AWS_CD']) {
+                sshagent(['AWS_CD']) { // Упевніться, що 'AWS_CD' це правильний ID для SSH креденціалів
                     script {
-                        sh "ssh -o StrictHostKeyChecking=no ${EC2_HOST} 'docker pull ${IMAGE_NAME}:${IMAGE_TAG}'"
+                        // Видаляємо старий контейнер перед створенням нового
+                        sh "ssh -o StrictHostKeyChecking=no ${EC2_HOST} 'docker rm -f nginx_container || true'"
+                        // Тепер створюємо новий контейнер
                         sh "ssh -o StrictHostKeyChecking=no ${EC2_HOST} 'docker run -d -p 80:80 --name nginx_container ${IMAGE_NAME}:${IMAGE_TAG}'"
                     }
                 }
