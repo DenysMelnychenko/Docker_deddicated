@@ -3,7 +3,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'mydevopsway/my_nginx_app' // Повне ім'я Docker образу
         IMAGE_TAG = 'latest'
-        EC2_HOST = 'ec2-user@ec2-3-9-144-180' // Замініть на вашу реальну публічну IP адресу EC2 інстансу
+        EC2_HOST = 'ec2-user@3.9.144.180' // Замініть на вашу реальну публічну IP адресу EC2 інстансу
     }
     stages {
         stage('Checkout') {
