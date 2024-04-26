@@ -32,7 +32,7 @@ pipeline {
         }
         stage('Deploy to EC2') {
             steps {
-                sshagent(['your-ssh-credential-id']) { // Замініть 'your-ssh-credential-id' на ID креденшіалів, які ви створили
+                sshagent(['AWC_CD']) { // Замініть 'your-ssh-credential-id' на ID креденшіалів, які ви створили
                     script {
                         // Команди для розгортання на EC2
                         sh "scp -o StrictHostKeyChecking=no ./deploy/docker-compose.yml ${EC2_HOST}:/home/ec2-user/"
